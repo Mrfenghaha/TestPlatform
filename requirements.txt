@@ -1,0 +1,6 @@
+PyYAML>=5.1.1
+Flask
+PyMySQL
+pytz
+pytest
+Crypto

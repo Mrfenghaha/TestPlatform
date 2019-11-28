@@ -1,0 +1,6 @@
+# 数据库环境
+mysql_host: localhost
+mysql_port: 3306
+mysql_user: root
+mysql_password: root
+mysql_database: test_platform
