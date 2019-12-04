@@ -1,6 +1,6 @@
 pytz
 pytest
-Crypto
+PyCryptodomex
 SQLAlchemy
 PyYAML>=5.1.1
 Flask
