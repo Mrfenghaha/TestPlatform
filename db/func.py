@@ -83,5 +83,8 @@ class DefaultData(MockConfigs):
 
 if __name__ == '__main__':
     Base.metadata.create_all(engine)  # 创建表结构
-    DefaultData().create_mock_configs()  # 插入mock_configs表初始数据
+    if session.query(MockConfigs).count() == 0:
+        DefaultData().create_mock_configs()  # 插入mock_configs表初始数据
+    else:
+        pass
     # Base.metadata.drop_all(engine)  # 删除表结构
