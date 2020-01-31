@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -
 from api.public.public import *
+from api.all_pairs.pairs import *
 from api.mock_server.mock import *
 from api.mock_server.response import *
 from api.mock_server.configs import *
@@ -12,7 +13,8 @@ class API:
         self.url = url
         self.request = request
         self.method = request.method
-        self.api_list = [{"url": 'mock_server/mock/show_lists', "method": "POST"},
+        self.api_list = [{"url": 'all_pairs/pairs/get_pairs', "method": "POST"},
+                         {"url": 'mock_server/mock/show_lists', "method": "POST"},
                          {"url": 'mock_server/mock/add', "method": "POST"},
                          {"url": 'mock_server/mock/delete', "method": "POST"},
                          {"url": 'mock_server/mock/update', "method": "POST"},
@@ -46,6 +48,9 @@ class API:
 
     def api(self):
         if self.judge() is True:
+            # all_pairs服务,获取正交组合
+            if self.url == 'all_pairs/pairs/get_pairs':
+                return AllPairs().get_pairs(self.request)
             # mock_server服务,,展示mock列表
             if self.url == 'mock_server/mock/show_lists':
                 return MockServersMock().get_mock_list(self.request)

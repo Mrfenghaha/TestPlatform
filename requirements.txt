@@ -5,3 +5,4 @@ SQLAlchemy
 PyYAML>=5.1.1
 Flask
 PyMySQL
+allpairspy
