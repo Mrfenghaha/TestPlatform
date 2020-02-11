@@ -1,11 +1,11 @@
 function showCustomer() {
 	var xmlhttp;
     var input = document.getElementById("input").value;
-
 	if (window.XMLHttpRequest) {
 		// IE7+, Firefox, Chrome, Opera, Safari 浏览器执行代码
 		xmlhttp = new XMLHttpRequest();
-	} else {
+	}
+	else {
 		// IE6, IE5 浏览器执行代码
 		xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
 	}
@@ -20,12 +20,14 @@ function showCustomer() {
 			var response = JSON.parse(xmlhttp.responseText);
             if (response.success === "false"){
                 document.getElementById("result").innerHTML = response.error_message;
-            } else{
-                document.getElementById("result").innerHTML = "Pairs:" + response.data;
+            }
+            else{
+                document.getElementById("result").innerHTML = "Pairs:" + response.data.ouput;
             }
 		}
-		if (xmlhttp.readyState == 4 && xmlhttp.status != 200) {
+		else if (xmlhttp.readyState == 4 && xmlhttp.status != 200) {
 			document.getElementById("status").innerHTML = "Request Fail Code:" + xmlhttp.status;
 			document.getElementById("result").innerHTML = "";
 		}
+    }
 }
