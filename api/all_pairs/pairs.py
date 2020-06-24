@@ -20,7 +20,7 @@ class AllPairs:
 class Func:
 
     def get_pairs(self, input):
-        data = {"ouput": all_pairs(input)}
+        data = {"ouput": json.dumps(all_pairs(input)).encode('utf-8').decode('unicode_escape')}
         return data
 
 
