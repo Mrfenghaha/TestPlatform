@@ -9,7 +9,7 @@ function showCustomer() {
 		// IE6, IE5 浏览器执行代码
 		xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
 	}
-    xmlhttp.open("POST", "/api/all_pairs/pairs/get_pairs", true);
+    xmlhttp.open("POST", "/api/tool/orthogonal", true);
 	xmlhttp.setRequestHeader("Content-type", "application/json");
 	xmlhttp.send(JSON.stringify({
 		"input": input
@@ -22,7 +22,7 @@ function showCustomer() {
                 document.getElementById("result").innerHTML = response.error_message;
             }
             else{
-                document.getElementById("result").innerHTML = "Pairs:" + response.data.ouput;
+                document.getElementById("result").innerHTML = "Pairs:" + response.data.pairs;
             }
 		}
 		else if (xmlhttp.readyState == 4 && xmlhttp.status != 200) {

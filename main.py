@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -
 import os
 from flask import *
-from api.api import *
-from src.mock_servers import MockServer
+from src.main.platform.interface import *
+from src.main.platform.tool.mock_servers import MockServer
 app = Flask(__name__)
 
 # 当前脚本所在的文件绝对路径
@@ -21,7 +21,7 @@ def system_services_page(url):
 @app.route('/api/<path:url>', methods=['GET', 'POST', 'HEAD', 'PUT', 'PATCH', 'DELETE'])
 def system_services_api(url):
     log('request', request)
-    response = API(url, request).api()
+    response = Interface(url, request).api()
     log('response', request, response)
     return response
 
@@ -39,7 +39,7 @@ def mock_services_api(url):
 # 创建数据库表和初始数据
 def create_db_table():
     # 使用os.path.join拼接地址
-    case_path = os.path.join(cur_path, "db")
+    case_path = os.path.join(cur_path, "mysql")
     print(os.path.join(case_path, "func.py"))
     os.system('python3 {}'.format(os.path.join(case_path, "func.py")))
 
