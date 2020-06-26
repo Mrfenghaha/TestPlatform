@@ -39,7 +39,7 @@ def mock_services_api(url):
 # 创建数据库表和初始数据
 def create_db_table():
     # 使用os.path.join拼接地址
-    case_path = os.path.join(cur_path, "mysql")
+    case_path = os.path.join(cur_path, "src/main/mysql")
     print(os.path.join(case_path, "func.py"))
     os.system('python3 {}'.format(os.path.join(case_path, "func.py")))
 
