@@ -11,12 +11,6 @@ cur_path = os.path.dirname(os.path.realpath(__file__))
 os.putenv("PYTHONPATH", cur_path)
 
 
-# 系统页面
-@app.route('/page/<path:url>')
-def system_services_page(url):
-    return render_template(url + '.html')
-
-
 # 系统服务接口
 @app.route('/api/<path:url>', methods=['GET', 'POST', 'HEAD', 'PUT', 'PATCH', 'DELETE'])
 def system_services_api(url):
