@@ -25,6 +25,7 @@ class MockServers(Base, TypeCast):
         time = datetime.datetime.strptime(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'), "%Y-%m-%d %H:%M:%S")
         if way == "insert":
             data = parm[0]  # data = {"url": , "method": , "is_available": , "delay": , "resp_code": , "remark": }
+            session = Session()
             add_data = MockServers(created_at=time, url=data['url'], method=data['method'],
                                    is_available=data['is_available'], delay=data['delay'], resp_code=data['resp_code'],
                                    remark=data['remark'])
@@ -35,6 +36,7 @@ class MockServers(Base, TypeCast):
             return new_data
         elif way == "delete":
             id = parm[0]
+            session = Session()
             session.query(MockServers).filter(MockServers.id == id).update({"deleted_at": time})
             session.commit()
             session.close()
@@ -42,6 +44,7 @@ class MockServers(Base, TypeCast):
             id = parm[0]
             data = parm[1]  # data = {"url": , "method": , "is_available": , "delay": , "resp_code": , "req_remark": }
             update_data = dict({"updated_at": time}, **data)
+            session = Session()
             session.query(MockServers).filter(MockServers.id == id).update(update_data)
             session.commit()
             new_data = session.query(MockServers).filter(MockServers.id == id).first()
@@ -50,30 +53,36 @@ class MockServers(Base, TypeCast):
         elif way == "get":
             operation = parm[0]
             if operation == "all_info":
+                session = Session()
                 t = session.query(MockServers).filter(MockServers.deleted_at == None).all()
                 session.close()
                 return self.to_json(t)
             elif operation == "specific_num_info":
                 start = parm[1]
                 num = parm[2]
+                session = Session()
                 t = session.query(MockServers).filter(MockServers.deleted_at == None).offset(start).limit(num).all()
                 session.close()
                 return self.to_json(t)
             elif operation == "first_by_id":
                 id = parm[1]
+                session = Session()
                 t = session.query(MockServers).filter(MockServers.id == id, MockServers.deleted_at == None).first()
                 session.close()
                 return t.to_dict()
             elif operation == "first_by_url":
                 url = parm[1]
+                session = Session()
                 t = session.query(MockServers).filter(MockServers.url == url, MockServers.deleted_at == None).first()
                 session.close()
                 return t.to_dict()
             elif operation == "all_id":
+                session = Session()
                 t = session.query(MockServers.id).filter(MockServers.deleted_at == None).all()
                 session.close()
                 return t
             elif operation == "all_url":
+                session = Session()
                 t = session.query(MockServers.url).filter(MockServers.deleted_at == None).all()
                 session.close()
                 return t

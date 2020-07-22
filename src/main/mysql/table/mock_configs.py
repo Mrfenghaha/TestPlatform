@@ -23,12 +23,14 @@ class MockConfigs(Base, TypeCast):
             operation = parm[0]
             if operation == "all_value_by_parm":
                 parm = parm[1]
+                session = Session()
                 t = session.query(MockConfigs.value).filter(MockConfigs.parm == parm,
                                                             MockConfigs.deleted_at == None).all()
                 session.close()
                 return t
             elif operation == "all_value_remark_by_parm":
                 parm = parm[1]
+                session = Session()
                 t = session.query(MockConfigs.value, MockConfigs.remark).filter(MockConfigs.parm == parm,
                                                                                 MockConfigs.deleted_at == None).all()
                 session.close()

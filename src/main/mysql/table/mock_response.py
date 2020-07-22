@@ -25,6 +25,7 @@ class MockResponse(Base, TypeCast):
         time = datetime.datetime.strptime(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'), "%Y-%m-%d %H:%M:%S")
         if way == "insert":
             data = parm[0]  # data={"mock_id":,"resp_code":,"resp_status":,"resp_headers":,"resp_body":,"remark":}
+            session = Session()
             add_data = MockResponse(created_at=time, mock_id=data['mock_id'], resp_code=data['resp_code'],
                                     resp_status=data['resp_status'], resp_headers=data['resp_headers'],
                                     resp_body=data['resp_body'], remark=data['remark'])
@@ -35,6 +36,7 @@ class MockResponse(Base, TypeCast):
             return new_data
         elif way == "delete":
             id = parm[0]
+            session = Session()
             session.query(MockResponse).filter(MockResponse.id == id).update({"deleted_at": time})
             session.commit()
             session.close()
@@ -42,6 +44,7 @@ class MockResponse(Base, TypeCast):
             id = parm[0]
             data = parm[1]  # data={"mock_id":,"resp_code":,"resp_status":,"resp_headers":,"resp_body":,"remark":}
             update_data = dict({"updated_at": time}, **data)
+            session = Session()
             session.query(MockResponse).filter(MockResponse.id == id).update(update_data)
             session.commit()
             new_data = session.query(MockResponse).filter(MockResponse.id == id).first()
@@ -50,29 +53,34 @@ class MockResponse(Base, TypeCast):
         elif way == "get":
             operation = parm[0]
             if operation == "all_id":
+                session = Session()
                 t = session.query(MockResponse.id).filter(MockResponse.deleted_at == None).all()
                 session.close()
                 return t
             elif operation == "all_by_mockId":
                 mock_id = parm[1]
+                session = Session()
                 t = session.query(MockResponse).filter(MockResponse.mock_id == mock_id,
                                                        MockResponse.deleted_at == None).all()
                 session.close()
                 return self.to_json(t)
             elif operation == "all_respCode_by_mockId":
                 mock_id = parm[1]
+                session = Session()
                 t = session.query(MockResponse.resp_code).filter(MockResponse.mock_id == mock_id,
                                                                  MockResponse.deleted_at == None).all()
                 session.close()
                 return t
             elif operation == "first_by_id":
                 id = parm[1]
+                session = Session()
                 t = session.query(MockResponse).filter(MockResponse.id == id, MockResponse.deleted_at == None).first()
                 session.close()
                 return t.to_dict()
             elif operation == "first_by_mockId_code":
                 mock_id = parm[1]
                 resp_code = parm[2]
+                session = Session()
                 t = session.query(MockResponse).filter(MockResponse.mock_id == mock_id,
                                                        MockResponse.resp_code == resp_code,
                                                        MockResponse.deleted_at == None).first()

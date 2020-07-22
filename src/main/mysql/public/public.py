@@ -16,7 +16,6 @@ mysql = "mysql+pymysql://{}:{}@{}:{}/{}?charset=utf8".format(mysql_info['user'],
 Base = declarative_base()
 engine = create_engine(mysql)
 Session = sessionmaker(bind=engine)
-session = Session()
 
 
 # 将sqlAlchemy查询的结果转换为dict或list

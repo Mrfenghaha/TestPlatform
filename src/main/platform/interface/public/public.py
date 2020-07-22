@@ -5,7 +5,7 @@ from flask import *
 # 接口统一的错误返回信息
 def error_response(error_message):
     response = Response(json.dumps({"success": False, "error_message": error_message}), content_type='application/json')
-    response.status = "400 Bad Request"
+    response.status = "403"
     return response
 
 

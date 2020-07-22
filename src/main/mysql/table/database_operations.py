@@ -15,16 +15,15 @@ class DatabaseOperations(Base, TypeCast):
     updated_at = Column(TIMESTAMP)
     deleted_at = Column(TIMESTAMP)
     name = Column(String(64), nullable=False, comment='操作名称')
-    db_id = Column(Integer, nullable=False, comment='数据库配置表id')
     sql = Column(TEXT, nullable=False, comment='sql语句')
-    remark = Column(TEXT, nullable=False, comment='备注')
+    remark = Column(TEXT, comment='备注')
 
     def database_operations_func(self, way, *parm):
         time = datetime.datetime.strptime(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'), "%Y-%m-%d %H:%M:%S")
         if way == "insert":
             data = parm[0]  # data = {"name": , "db_id": , "sql": , "remark": }
-            add_data = DatabaseOperations(created_at=time, name=data['name'], db_id=data['db_id'], sql=data['sql'],
-                                          remark=data['remark'])
+            session = Session()
+            add_data = DatabaseOperations(created_at=time, name=data['name'], sql=data['sql'], remark=data['remark'])
             session.add(add_data)
             session.commit()
             new_data = add_data.to_dict()  # 获取添加入数据库的所有数据,并转为dict
@@ -32,6 +31,7 @@ class DatabaseOperations(Base, TypeCast):
             return new_data
         elif way == "delete":
             id = parm[0]
+            session = Session()
             session.query(DatabaseOperations).filter(DatabaseOperations.id == id).update({"deleted_at": time})
             session.commit()
             session.close()
@@ -39,6 +39,7 @@ class DatabaseOperations(Base, TypeCast):
             id = parm[0]
             data = parm[1]  # data = {"name": , "db_id": , "sql": , "description": }
             update_data = dict({"updated_at": time}, **data)
+            session = Session()
             session.query(DatabaseOperations).filter(DatabaseOperations.id == id).update(update_data)
             session.commit()
             new_data = session.query(DatabaseOperations).filter(DatabaseOperations.id == id).first()
@@ -47,25 +48,36 @@ class DatabaseOperations(Base, TypeCast):
         elif way == "get":
             operation = parm[0]
             if operation == "all_info":
+                session = Session()
                 t = session.query(DatabaseOperations).filter(DatabaseOperations.deleted_at == None).all()
                 session.close()
                 return self.to_json(t)
+            # 获取DatabaseOperations表中有效数据的总个数
+            elif operation == "all_info_count":
+                session = Session()
+                t = session.query(func.count(DatabaseOperations.id)).filter(DatabaseOperations.deleted_at == None).all()
+                session.close()
+                return t[0][0]
             elif operation == "specific_num_info":
                 start = parm[1]
                 num = parm[2]
-                t = session.query(DatabaseOperations).filter(DatabaseOperations.deleted_at == None).offset(start).limit(num).all()
+                session = Session()
+                t = session.query(DatabaseOperations).filter(DatabaseOperations.deleted_at == None).order_by(DatabaseOperations.created_at.desc()).offset(start).limit(num).all()
                 session.close()
                 return self.to_json(t)
             elif operation == "all_name":
+                session = Session()
                 t = session.query(DatabaseOperations.name).filter(DatabaseOperations.deleted_at == None).all()
                 session.close()
                 return t
             elif operation == "all_id":
+                session = Session()
                 t = session.query(DatabaseOperations.id).filter(DatabaseOperations.deleted_at == None).all()
                 session.close()
                 return t
             elif operation == "first_by_id":
                 id = parm[1]
+                session = Session()
                 t = session.query(DatabaseOperations).filter(DatabaseOperations.id == id,
                                                              DatabaseOperations.deleted_at == None).first()
                 session.close()
