@@ -198,8 +198,6 @@ class CheckParm(DBQuery):
 
         if type(param) != list:
             return False, "param is error, param not filled or type error"
-        elif param == []:
-            return False, "param is error, param cannot be empty"
         elif db_id not in db_configs_id_list:
             return False, "param is error, db_id not exist"
         elif operation_id not in db_operations_id_list:

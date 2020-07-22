@@ -137,7 +137,7 @@ class CheckParm(DBQuery):
         # 写入数据库的数据,根据数据库响应要求设置长度校验
         elif len(name) > 64 or len(ip) > 64 or len(username) > 64 or len(password) > 64:
             return False, "param is error, param is too long"
-        elif name == "" or ip == "" or username == "" or password == "" or remark == "":
+        elif name == "" or ip == "" or username == "" or password == "":
             return False, "param is error, param cannot be empty"
         elif name in db_configs_name_list:
             return False, "param is error, name already exist"
@@ -158,13 +158,12 @@ class CheckParm(DBQuery):
         db_configs_name_list = self.db_query()[0]
         db_configs_id_list = self.db_query()[1]
 
-        if type(name) != str or type(ip) != str or type(port) != int or type(username) != str or type(password) != str \
-                or type(remark) != str:
+        if type(name) != str or type(ip) != str or type(port) != int or type(username) != str or type(password) != str:
             return False, "param is error, param not filled or type error"
         # 写入数据库的数据,根据数据库响应要求设置长度校验
         elif len(name) > 64 or len(ip) > 64 or len(username) > 64 or len(password) > 64:
             return False, "param is error, param is too long"
-        elif name == "" or ip == "" or username == "" or password == "" or remark == "":
+        elif name == "" or ip == "" or username == "" or password == "":
             return False, "param is error, param cannot be empty"
         elif id not in db_configs_id_list:
             return False, "param is error, id not exist"
