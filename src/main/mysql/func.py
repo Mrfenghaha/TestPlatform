@@ -31,6 +31,7 @@ def database_func(table, way, *parm):
 class DefaultData(MockConfigs):
 
     def create_mock_configs(self):
+        session = Session()
         time = datetime.datetime.strptime(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'), "%Y-%m-%d %H:%M:%S")
 
         value_list = ["GET", "POST", "HEAD", "PUT", "PATCH", "DELETE"]
@@ -83,6 +84,7 @@ class DefaultData(MockConfigs):
 
 if __name__ == '__main__':
     Base.metadata.create_all(engine)  # 创建表结构
+    session = Session()
     if session.query(MockConfigs).count() == 0:
         DefaultData().create_mock_configs()  # 插入mock_configs表初始数据
     else:
