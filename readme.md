@@ -10,7 +10,7 @@ GRANT ALL PRIVILEGES on 数据库名.* to '用户名'@'localhost' identified by 
 FLUSH PRIVILEGES;
 ```
 ## 修改数据库配置文件
-位置：/db/db_config/config.yaml  进行相应的数据库信息修改
+位置：config/env.yaml  进行相应的数据库信息修改
 ## 安装python相关包
 ```
 pip3 install -r requirements.txt
