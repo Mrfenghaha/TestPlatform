@@ -9,8 +9,8 @@ GRANT ALL PRIVILEGES on 数据库名.* to '用户名'@'localhost';  #授权创�
 GRANT ALL PRIVILEGES on 数据库名.* to '用户名'@'localhost' identified by '用户密码';  #旧版mysql授权创建的帐号访问程序数据库
 FLUSH PRIVILEGES;
 ```
-## 修改数据库配置文件
-位置：config/env.yaml  进行相应的数据库信息修改
+## 修改配置文件
+cd进入项目，启动服务会在config文件夹中创建env.yaml文件并赋默认值，进行相应的数据库信息修改即可
 ## 安装python相关包
 ```
 pip3 install -r requirements.txt
