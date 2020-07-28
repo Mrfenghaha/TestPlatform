@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -
-from src.main.platform.tool.orthogonal import Orthogonal as FuncOrthogonal
+from src.main.platform.tool.pairs import Pairs as FuncPairs
 from src.main.platform.interface.public.public import *
 
 
-class Orthogonal:
+class Pairs:
 
     def get_pairs(self, request):
         input = request.json.get("input")
@@ -20,14 +20,16 @@ class Orthogonal:
 class Func:
 
     def get_pairs(self, input):
-        data = {"pairs": json.dumps(FuncOrthogonal().all_pairs(input)).encode('utf-8').decode('unicode_escape')}
+        # data = {"pairs": json.dumps(FuncOrthogonal().all_pairs(input)).encode('utf-8').decode('unicode_escape')}
+        result = FuncPairs().all_pairs(input)
+        data = {"num": result[0], "pairs": result[1]}
         return data
 
 
 class CheckParm:
 
     def get_pairs(self, input):
-        if type(input) != str:
+        if type(input) != list:
             return False, "param is error, param not filled or type error"
         else:
             return True, None

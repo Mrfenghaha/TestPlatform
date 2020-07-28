@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -
 from flask import *
 from src.main.platform.common.logger import log
-from src.main.platform.interface.orthogonal import Orthogonal
+from src.main.platform.interface.pairs import Pairs
 from src.main.platform.interface.mockServer import MockServer
 from src.main.platform.interface.mockServerConfigs import MockServerConfigs
 from src.main.platform.interface.mockServerResponse import MockServerResponse
@@ -14,7 +14,7 @@ class Interface:
         self.url = url
         self.request = request
         self.method = request.method
-        self.interface_list = [{"url": "tool/orthogonal", "method": "POST"},
+        self.interface_list = [{"url": "tool/pairs", "method": "POST"},
                                {"url": "tool/mock_server/get_mock_list", "method": "GET"},
                                {"url": "tool/mock_server/add_mock", "method": "POST"},
                                {"url": "tool/mock_server/delete_mock", "method": "DELETE"},
@@ -50,8 +50,8 @@ class Interface:
     def api(self):
         if self.judge() is True:
             # all_pairs服务,获取正交组合
-            if self.url == "tool/orthogonal":
-                return Orthogonal().get_pairs(self.request)
+            if self.url == "tool/pairs":
+                return Pairs().get_pairs(self.request)
             # mock_server服务,,展示mock列表
             if self.url == "tool/mock_server/get_mock_list":
                 return MockServer().get_mock_list(self.request)

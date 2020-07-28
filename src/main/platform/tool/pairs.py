@@ -5,7 +5,7 @@ import re
 from allpairspy import AllPairs
 
 
-class Orthogonal:
+class Pairs:
 
     def parse(self, data):
         # 解析/过滤读取的文件成为可识别格式
@@ -19,10 +19,9 @@ class Orthogonal:
             parameters.append(d)
         return parameters
 
-    def all_pairs(self, data):
-        parameters = self.parse(data)
+    def all_pairs(self, parameters):
+        # parameters = self.parse(data)
         result = []
-        for i, pairs in enumerate(AllPairs(parameters)):
-            res = {"num": i + 1, "pair": pairs}
-            result.append(res)
-        return result
+        for pairs in enumerate(AllPairs(parameters)):
+            result.append(pairs[1])
+        return len(result), result
