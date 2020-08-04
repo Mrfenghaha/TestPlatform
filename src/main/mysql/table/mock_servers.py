@@ -11,15 +11,15 @@ class MockServers(Base, TypeCast):
     __tablename__ = 'mock_servers'
     # 表的结构:
     id = Column(Integer, primary_key=True, autoincrement=True)
-    created_at = Column(TIMESTAMP)
-    updated_at = Column(TIMESTAMP)
-    deleted_at = Column(TIMESTAMP)
     url = Column(String(255), nullable=False, comment='url地址')
     method = Column(String(25), nullable=False, comment='请求方法')
-    is_available = Column(String(25), nullable=False, comment='是否启用')
+    is_available = Column(Integer, nullable=False, comment='是否启用')
     delay = Column(Integer, nullable=False, comment='延时响应时间(s)')
     resp_code = Column(Integer, nullable=False, comment='响应编码')
     remark = Column(TEXT, nullable=False, comment='接口描述')
+    created_at = Column(TIMESTAMP)
+    updated_at = Column(TIMESTAMP)
+    deleted_at = Column(TIMESTAMP)
 
     def mock_servers_func(self, way, *parm):
         time = datetime.datetime.strptime(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'), "%Y-%m-%d %H:%M:%S")
@@ -57,6 +57,12 @@ class MockServers(Base, TypeCast):
                 t = session.query(MockServers).filter(MockServers.deleted_at == None).all()
                 session.close()
                 return self.to_json(t)
+            # 获取MockServers表中有效数据的总个数
+            elif operation == "all_info_count":
+                session = Session()
+                t = session.query(func.count(MockServers.id)).filter(MockServers.deleted_at == None).all()
+                session.close()
+                return t[0][0]
             elif operation == "specific_num_info":
                 start = parm[1]
                 num = parm[2]

@@ -44,7 +44,6 @@ class DBOperation:
             result_res = {"status": "执行失败，参数缺失", "result": ''}
             return result_res
 
-
     # 先后执行多条语句
     def db_operation_more(self, group):
         count = []  # 创建一个数组

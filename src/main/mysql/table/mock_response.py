@@ -11,15 +11,15 @@ class MockResponse(Base, TypeCast):
     __tablename__ = 'mock_response'
     # 表的结构:
     id = Column(Integer, primary_key=True, autoincrement=True)
-    created_at = Column(TIMESTAMP)
-    updated_at = Column(TIMESTAMP)
-    deleted_at = Column(TIMESTAMP)
     mock_id = Column(Integer, nullable=False, comment='mock接口id')
     resp_code = Column(Integer, nullable=False, comment='响应编码')
     resp_status = Column(String(255), nullable=False, comment='响应状态')
     resp_headers = Column(TEXT, nullable=True, comment='响应信息头,json字符串格式')
     resp_body = Column(TEXT, nullable=True, comment='响应信息,json字符串格式')
     remark = Column(TEXT, nullable=False, comment='响应备注')
+    created_at = Column(TIMESTAMP)
+    updated_at = Column(TIMESTAMP)
+    deleted_at = Column(TIMESTAMP)
 
     def mock_response_func(self, way, *parm):
         time = datetime.datetime.strptime(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'), "%Y-%m-%d %H:%M:%S")
@@ -84,6 +84,7 @@ class MockResponse(Base, TypeCast):
                 t = session.query(MockResponse).filter(MockResponse.mock_id == mock_id,
                                                        MockResponse.resp_code == resp_code,
                                                        MockResponse.deleted_at == None).first()
+                print(t)
                 session.close()
                 return t.to_dict()
 

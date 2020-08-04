@@ -11,12 +11,12 @@ class MockConfigs(Base, TypeCast):
     __tablename__ = 'mock_configs'
     # 表的结构:
     id = Column(Integer, primary_key=True, autoincrement=True)
-    created_at = Column(TIMESTAMP)
-    updated_at = Column(TIMESTAMP)
-    deleted_at = Column(TIMESTAMP)
     parm = Column(String(25), nullable=False, comment='参数名称:请求方法,响应状态')
     value = Column(String(64), nullable=False, comment='参数值')
     remark = Column(TEXT, nullable=True, comment='参数备注')
+    created_at = Column(TIMESTAMP)
+    updated_at = Column(TIMESTAMP)
+    deleted_at = Column(TIMESTAMP)
 
     def mock_configs_func(self, way, *parm):
         if way == "get":

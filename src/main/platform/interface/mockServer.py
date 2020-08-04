@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -
+from urllib import parse
 from src.main.mysql.func import *
 from src.main.platform.interface.public.public import *
 
@@ -6,13 +7,20 @@ from src.main.platform.interface.public.public import *
 class MockServer:
 
     def get_mock_list(self, request):
-        page_num = request.json.get("page_num")
-        num = request.json.get("num")
+        parms = parse.parse_qs(parse.urlparse(request.url).query)
+        try:
+            page = int(parms["page"][0])
+        except:
+            page = 1
+        try:
+            size = int(parms["size"][0])
+        except:
+            size = 10
 
         # 根据参数检查结果判断,如果检查通过则正常处理
-        check_result = CheckParm().get_mock_list(page_num, num)
+        check_result = CheckParm().get_mock_list(page, size)
         if check_result[0] is True:
-            data = Func().get_mock_list(page_num, num)
+            data = Func().get_mock_list(page, size)
             return right_response(data)
         else:
             return error_response(check_result[1])
@@ -83,11 +91,18 @@ class DBQuery:
 
 class Func(DBQuery):
 
-    def get_mock_list(self, page_num, num):
-        start = (page_num - 1) * num  # 按照排序从第n个开始(0-*)
-        data = database_func("mock_servers", "get", "specific_num_info", start, num)
-        for d in data:  # 移除不需要的key、value
-            del d['created_at'], d['updated_at'], d['deleted_at']
+    def get_mock_list(self, page, size):
+        start = (page - 1) * size  # 按照排序从第n个开始(0-*)
+        content = database_func("mock_servers", "get", "specific_num_info", start, size)
+        for con in content:  # 移除不需要的key、value
+            mock_id, resp_code = con['id'], con['resp_code']
+            resp_info = database_func("mock_response", "get", "first_by_mockId_code", mock_id, resp_code)
+            con['response'] = {"status": resp_info['resp_status'], "headers": eval(resp_info['resp_headers']),
+                               "body": eval(resp_info['resp_body'])}
+            del con['created_at'], con['updated_at'], con['deleted_at']
+        total = database_func("mock_servers", "get", "all_info_count")  # 获取总条数
+        data = {"content": content, "total": total}
+
         return data
 
     def add_mock_server(self, url, method, is_available, delay, resp_code, remark):
@@ -114,14 +129,11 @@ class Func(DBQuery):
 
 class CheckParm(DBQuery):
 
-    def get_mock_list(self, page_num, num):
-
-        if type(page_num) != int or type(num) != int:  # 如果url不为int类型(判断空字符和非空字符时的字符类型,空字符的类型是NoneType)
+    def get_mock_list(self, page, size):
+        if type(page) != int or type(size) != int:
             return False, "param is error, param not filled or type error"
-        elif page_num <= 0:
-            return False, "param is error, page_num must > 0"
-        elif num < 0:
-            return False, "param is error, num must >= 0"
+        elif page <= 0 or size <= 0:
+            return False, "param is error, page and size must > 0"
         else:
             return True, None
 

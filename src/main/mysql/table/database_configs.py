@@ -11,15 +11,15 @@ class DatabaseConfigs(Base, TypeCast):
     __tablename__ = 'database_configs'
     # 表的结构:
     id = Column(Integer, primary_key=True, autoincrement=True)
-    created_at = Column(TIMESTAMP)
-    updated_at = Column(TIMESTAMP)
-    deleted_at = Column(TIMESTAMP)
     name = Column(String(64), nullable=False, comment='名称')
     ip = Column(String(64), nullable=False, comment='数据库IP')
     port = Column(Integer, nullable=False, comment='数据库端口号')
     username = Column(String(64), nullable=False, comment='数据库帐号')
     password = Column(String(255), nullable=False, comment='数据库密码')
     remark = Column(Text, comment='备注')
+    created_at = Column(TIMESTAMP)
+    updated_at = Column(TIMESTAMP)
+    deleted_at = Column(TIMESTAMP)
 
     def database_configs_func(self, way, *parm):
         time = datetime.datetime.strptime(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'), "%Y-%m-%d %H:%M:%S")

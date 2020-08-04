@@ -11,12 +11,12 @@ class DatabaseOperations(Base, TypeCast):
     __tablename__ = 'database_operations'
     # 表的结构:
     id = Column(Integer, primary_key=True, autoincrement=True)
-    created_at = Column(TIMESTAMP)
-    updated_at = Column(TIMESTAMP)
-    deleted_at = Column(TIMESTAMP)
     name = Column(String(64), nullable=False, comment='操作名称')
     sql = Column(TEXT, nullable=False, comment='sql语句')
     remark = Column(TEXT, comment='备注')
+    created_at = Column(TIMESTAMP)
+    updated_at = Column(TIMESTAMP)
+    deleted_at = Column(TIMESTAMP)
 
     def database_operations_func(self, way, *parm):
         time = datetime.datetime.strptime(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'), "%Y-%m-%d %H:%M:%S")
