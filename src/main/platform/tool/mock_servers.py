@@ -58,14 +58,14 @@ class MockReturn:
         if resp_headers == "":
             response_headers = None  # 如果没有配置resp_headers,则返回空字符
         else:
-            response_headers = eval(resp_headers)  # 将结果转为字典用于响应返回
+            response_headers = json.loads(resp_headers)  # 将结果转为字典用于响应返回
 
         if resp_body == "":
             response_body = None  # 如果没有配置resp_body,则返回空字符
         else:
-            response_body = json.dumps(eval(resp_body))  # 将结果转为字典用于响应返回
+            response_body = json.loads(resp_body)  # 将结果转为字典用于响应返回
 
-        resp = Response(response_body)
+        resp = Response(json.dumps(response_body))
         resp.status = result['resp_status']  # status直接使用str字符即可
         resp.headers = response_headers
         return resp
@@ -123,7 +123,7 @@ class MockServer(MockErrorHandle):
 
     # 对于存在的mock接口根据配置进行响应返回
     def mock(self, is_available, delay, response):
-        if is_available == 'no':
+        if is_available == 0:
             log.info('MockServer请求url未启用,响应404')
             abort(404)  # 如果mock不启用，报404
         else:
@@ -161,7 +161,7 @@ class MockServerRequest(MockErrorHandle):
 
     # 对于存在的mock接口根据配置进行响应返回
     def mock_request(self, is_available, delay, headers_parm, body_parm, request, response):
-        if is_available == 'no':
+        if is_available == 0:
             log.info('MockServer请求url未启用,响应404')
             abort(404)  # 如果mock不启用，报404
         else:

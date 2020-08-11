@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -
+import json
 from urllib import parse
 from src.main.mysql.func import *
 from src.main.platform.interface.public.public import *
@@ -27,16 +28,15 @@ class MockServer:
 
     def add_mock_server(self, request):
         url = request.json.get("url")
-        method = request.json.get("method")
+        method = request.json.get("methods")
         is_available = request.json.get("is_available")
         delay = request.json.get("delay")
-        resp_code = request.json.get("resp_code")
         remark = request.json.get("remark")
 
         # 根据参数检查结果判断,如果检查通过则正常处理
-        check_result = CheckParm().add_mock_server(url, method, is_available, delay, resp_code, remark)
+        check_result = CheckParm().add_mock_server(url, method, is_available, delay, remark)
         if check_result[0] is True:
-            data = Func().add_mock_server(url, method, is_available, delay, resp_code, remark)
+            data = Func().add_mock_server(url, method, is_available, delay, remark)
             return right_response(data)
         else:
             return error_response(check_result[1])
@@ -55,7 +55,7 @@ class MockServer:
     def update_mock_server(self, request):
         id = request.json.get("id")
         url = request.json.get("url")
-        method = request.json.get("method")
+        method = request.json.get("methods")
         is_available = request.json.get("is_available")
         delay = request.json.get("delay")
         resp_code = request.json.get("resp_code")
@@ -97,26 +97,28 @@ class Func(DBQuery):
         for con in content:  # 移除不需要的key、value
             mock_id, resp_code = con['id'], con['resp_code']
             resp_info = database_func("mock_response", "get", "first_by_mockId_code", mock_id, resp_code)
-            con['response'] = {"status": resp_info['resp_status'], "headers": eval(resp_info['resp_headers']),
-                               "body": eval(resp_info['resp_body'])}
+            con['response'] = {"status": resp_info['resp_status'], "headers": json.loads(resp_info['resp_headers']),
+                               "body": json.loads(resp_info['resp_body'])}
             del con['created_at'], con['updated_at'], con['deleted_at']
         total = database_func("mock_servers", "get", "all_info_count")  # 获取总条数
         data = {"content": content, "total": total}
-
         return data
 
-    def add_mock_server(self, url, method, is_available, delay, resp_code, remark):
-        data = {"url": url, "method": method, "is_available": is_available, "delay": delay, "resp_code": resp_code,
+    def add_mock_server(self, url, method, is_available, delay, remark):
+        # 添加mock
+        data = {"url": url, "method": method, "is_available": is_available, "delay": delay, "resp_code": 0,
                 "remark": remark}
         db_data = database_func("mock_servers", "insert", data)
-        # 移除不需要的key、value
-        del db_data['created_at'], db_data['updated_at'], db_data['deleted_at']
+        del db_data['created_at'], db_data['updated_at'], db_data['deleted_at']  # 移除不需要的key、value
+        # 添加默认的response
+        resp_data = {"mock_id": db_data['id'], "resp_code": 0, "resp_status": '200 OK',
+                     "resp_headers": '{"content-type": "application/json"}',
+                     "resp_body": '{"success": true}', "remark": '默认成功返回200'}
+        database_func("mock_response", "insert", resp_data)
         return db_data
 
     def delete_mock_server(self, id):
         database_func("mock_servers", "delete", id)
-        response = Response(json.dumps({'success': True}), content_type='application/json')
-        return response
 
     def update_mock_server(self, id, url, method, is_available, delay, resp_code, remark):
         data = {"url": url, "method": method, "is_available": is_available, "delay": delay, "resp_code": resp_code,
@@ -137,17 +139,16 @@ class CheckParm(DBQuery):
         else:
             return True, None
 
-    def add_mock_server(self, url, method, is_available, delay, resp_code, remark):
+    def add_mock_server(self, url, method, is_available, delay, remark):
         methods_list = self.db_query()[0]
         url_list = self.db_query()[2]
-        is_available_list = ["yes", "no"]
+        is_available_list = [1, 0]
 
         # 必填参数验证(未传类型NoneType)、必填参数传参类型是否正确
-        if type(url) != str or type(method) != str or type(is_available) != str or type(delay) != int \
-                or type(resp_code) != int or type(remark) != str:
+        if type(url) != str or type(method) != str or type(is_available) != int or type(delay) != int or type(remark) != str:
             return False, "param is error, param not filled or type error"
         # 写入数据库的数据,根据数据库响应要求设置长度校验
-        elif len(url) > 255 or len(method) > 25 or len(is_available) > 25:
+        elif len(url) > 255 or len(method) > 25:
             return False, "param is error, param is too long"
         # 具体字段进行具体的判断
         elif url in url_list:
@@ -155,11 +156,9 @@ class CheckParm(DBQuery):
         elif method not in methods_list:
             return False, "param is error, method not exist"
         elif is_available not in is_available_list:
-            return False, "param is error, is_available only 'yes' or 'no'"
+            return False, "param is error, is_available only 1 or 0"
         elif delay < 0:
             return False, "param is error, delay must >= 0"
-        elif resp_code < 0:
-            return False, "param is error, resp_code must >= 0"
         elif remark == "":
             return False, "param is error, remark cannot be empty"
         else:
@@ -181,13 +180,13 @@ class CheckParm(DBQuery):
         methods_list = self.db_query()[0]
         mock_id_list = self.db_query()[1]
         url_list = self.db_query()[2]
-        is_available_list = ["yes", "no"]
+        is_available_list = [1, 0]
 
-        if type(id) != int or type(url) != str or type(method) != str or type(is_available) != str \
+        if type(id) != int or type(url) != str or type(method) != str or type(is_available) != int \
                 or type(delay) != int or type(resp_code) != int or type(remark) != str:
             return False, "param is error, param not filled or type error"
         # 写入数据库的数据,根据数据库响应要求设置长度校验
-        elif len(url) > 255 or len(method) > 25 or len(is_available) > 25:
+        elif len(url) > 255 or len(method) > 25:
             return False, "param is error, param is too long"
         elif id < 0:
             return False, "param is error, id must >= 0"
@@ -200,7 +199,7 @@ class CheckParm(DBQuery):
             elif method not in methods_list:
                 return False, "param is error, method not exist"
             elif is_available not in is_available_list:
-                return False, "param is error, is_available only 'yes' or 'no'"
+                return False, "param is error, is_available only 1 or 0"
             elif delay < 0:
                 return False, "param is error, delay must >= 0"
             elif resp_code < 0:

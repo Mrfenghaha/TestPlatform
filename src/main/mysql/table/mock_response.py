@@ -84,7 +84,6 @@ class MockResponse(Base, TypeCast):
                 t = session.query(MockResponse).filter(MockResponse.mock_id == mock_id,
                                                        MockResponse.resp_code == resp_code,
                                                        MockResponse.deleted_at == None).first()
-                print(t)
                 session.close()
                 return t.to_dict()
 

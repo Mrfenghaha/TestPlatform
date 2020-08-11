@@ -54,7 +54,7 @@ class MockServers(Base, TypeCast):
             operation = parm[0]
             if operation == "all_info":
                 session = Session()
-                t = session.query(MockServers).filter(MockServers.deleted_at == None).all()
+                t = session.query(MockServers).filter(MockServers.deleted_at == None).order_by(MockServers.created_at.desc()).all()
                 session.close()
                 return self.to_json(t)
             # 获取MockServers表中有效数据的总个数
@@ -67,7 +67,7 @@ class MockServers(Base, TypeCast):
                 start = parm[1]
                 num = parm[2]
                 session = Session()
-                t = session.query(MockServers).filter(MockServers.deleted_at == None).offset(start).limit(num).all()
+                t = session.query(MockServers).filter(MockServers.deleted_at == None).order_by(MockServers.created_at.desc()).offset(start).limit(num).all()
                 session.close()
                 return self.to_json(t)
             elif operation == "first_by_id":
