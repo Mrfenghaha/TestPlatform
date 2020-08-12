@@ -8,15 +8,10 @@ from src.main.platform.interface.public.public import *
 class DBOperationConfigs:
 
     def get_db_config_list(self, request):
-        parms = parse.parse_qs(parse.urlparse(request.url).query)
-        try:
-            page = int(parms["page"][0])
-        except:
-            page = 1
-        try:
-            size = int(parms["size"][0])
-        except:
-            size = 10
+        parm = parse.parse_qs(parse.urlparse(request.url).query)
+        parms = {k: v[0] for k, v in parm.items()}
+        page = parms.get("page")
+        size = parms.get("size")
 
         # 根据参数检查结果判断,如果检查通过则正常处理
         check_result = CheckParm().get_db_configs_list(page, size)
@@ -122,9 +117,11 @@ class Func(DBQuery):
 class CheckParm(DBQuery):
 
     def get_db_configs_list(self, page, size):
-        if type(page) != int or type(size) != int:
+        try:
+            page, size = int(page), int(size)
+        except:
             return False, "param is error, param not filled or type error"
-        elif page <= 0 or size <= 0:
+        if page <= 0 or size <= 0:
             return False, "param is error, page and size must > 0"
         else:
             return True, None
@@ -132,7 +129,8 @@ class CheckParm(DBQuery):
     def add_db_configs(self, name, ip, port, username, password, remark):
         db_configs_name_list = self.db_query()[0]
 
-        if type(name) != str or type(ip) != str or type(port) != int or type(username) != str or type(password) != str:
+        if type(name) != str or type(ip) != str or type(port) != int or type(username) != str or type(password) != str \
+                or type(remark) != str:
             return False, "param is error, param not filled or type error"
         # 写入数据库的数据,根据数据库响应要求设置长度校验
         elif len(name) > 64 or len(ip) > 64 or len(username) > 64 or len(password) > 64:
@@ -149,7 +147,9 @@ class CheckParm(DBQuery):
     def delete_db_configs(self, id):
         db_configs_id_list = self.db_query()[1]
 
-        if id not in db_configs_id_list:
+        if type(id) != int:
+            return False, "param is error, param not filled or type error"
+        elif id not in db_configs_id_list:
             return False, "param is error, id not exist"
         else:
             return True, None
@@ -158,7 +158,8 @@ class CheckParm(DBQuery):
         db_configs_name_list = self.db_query()[0]
         db_configs_id_list = self.db_query()[1]
 
-        if type(name) != str or type(ip) != str or type(port) != int or type(username) != str or type(password) != str:
+        if type(id) != int or type(name) != str or type(ip) != str or type(port) != int or type(username) != str \
+                or type(password) != str or type(remark) != str:
             return False, "param is error, param not filled or type error"
         # 写入数据库的数据,根据数据库响应要求设置长度校验
         elif len(name) > 64 or len(ip) > 64 or len(username) > 64 or len(password) > 64:

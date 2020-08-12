@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -
+from urllib import parse
 from src.main.mysql.func import *
 from src.main.platform.interface.public.public import *
 
@@ -6,12 +7,14 @@ from src.main.platform.interface.public.public import *
 class MockServerResponse:
 
     def get_mock_response(self, request):
-        mock_id = request.json.get("mock_id")
+        parm = parse.parse_qs(parse.urlparse(request.url).query)
+        parms = {k: v[0] for k, v in parm.items()}
+        mock_id = parms.get("mock_id")
 
         # 根据参数检查结果判断,如果检查通过则正常处理
         check_result = CheckParm().get_mock_response(mock_id)
         if check_result[0] is True:
-            data = Func().get_mock_response(mock_id)
+            data = Func().get_mock_response(int(mock_id))
             return right_response(data)
         else:
             return error_response(check_result[1])
@@ -112,9 +115,11 @@ class CheckParm(DBQuery):
     def get_mock_response(self, mock_id):
         mock_id_list = self.db_query()[1]
 
-        if type(mock_id) != int:
+        try:
+            mock_id = int(mock_id)
+        except:
             return False, "param is error, param not filled or type error"
-        elif mock_id not in mock_id_list:
+        if mock_id not in mock_id_list:
             return False, "param is error, mock_id not exist"
         else:
             return True, None
@@ -149,8 +154,6 @@ class CheckParm(DBQuery):
 
         if type(id) != int:
             return False, "param is error, param not filled or type error"
-        elif id < 0:
-            return False, "param is error, id must >= 0"
         elif id not in resp_id_list:
             return False, "param is error, id not exist"
         else:

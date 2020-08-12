@@ -9,20 +9,15 @@ from src.main.platform.interface.public.public import *
 class DBOperation:
 
     def get_db_operation_list(self, request):
-        parms = parse.parse_qs(parse.urlparse(request.url).query)
-        try:
-            page = int(parms["page"][0])
-        except:
-            page = 1
-        try:
-            size = int(parms["size"][0])
-        except:
-            size = 10
+        parm = parse.parse_qs(parse.urlparse(request.url).query)
+        parms = {k: v[0] for k, v in parm.items()}
+        page = parms.get("page")
+        size = parms.get("size")
 
         # 根据参数检查结果判断,如果检查通过则正常处理
         check_result = CheckParm().get_db_operation_list(page, size)
         if check_result[0] is True:
-            data = Func().get_db_operation_list(page, size)
+            data = Func().get_db_operation_list(int(page), int(size))
             return right_response(data)
         else:
             return error_response(check_result[1])
@@ -142,9 +137,11 @@ class Func(DBQuery):
 class CheckParm(DBQuery):
 
     def get_db_operation_list(self, page, size):
-        if type(page) != int or type(size) != int:
+        try:
+            page, size = int(page), int(size)
+        except:
             return False, "param is error, param not filled or type error"
-        elif page <= 0 or size <= 0:
+        if page <= 0 or size <= 0:
             return False, "param is error, page and size must > 0"
         else:
             return True, None
@@ -152,7 +149,7 @@ class CheckParm(DBQuery):
     def add_db_operation(self, name, sql, remark):
         db_operations_name_list = self.db_query()[0]
 
-        if type(name) != str or type(sql) != str:
+        if type(name) != str or type(sql) != str or type(remark) != str:
             return False, "param is error, param not filled or type error"
         # 写入数据库的数据,根据数据库响应要求设置长度校验
         elif len(name) > 64:
@@ -167,7 +164,9 @@ class CheckParm(DBQuery):
     def delete_db_operation(self, id):
         db_operations_id_list = self.db_query()[1]
 
-        if id not in db_operations_id_list:
+        if type(id) != int:
+            return False, "param is error, param not filled or type error"
+        elif id not in db_operations_id_list:
             return False, "param is error, id not exist"
         else:
             return True, None
@@ -176,7 +175,7 @@ class CheckParm(DBQuery):
         db_operations_name_list = self.db_query()[0]
         db_operations_id_list = self.db_query()[1]
 
-        if type(name) != str or type(sql) != str:
+        if type(id) != int or type(name) != str or type(sql) != str or type(remark) != str:
             return False, "param is error, param not filled or type error"
         # 写入数据库的数据,根据数据库响应要求设置长度校验
         elif len(name) > 64:
@@ -196,7 +195,7 @@ class CheckParm(DBQuery):
         db_configs_id_list = self.db_query()[2]
         db_operations_id_list = self.db_query()[1]
 
-        if type(param) != list:
+        if type(db_id) != int or type(operation_id) != int or type(param) != list:
             return False, "param is error, param not filled or type error"
         elif db_id not in db_configs_id_list:
             return False, "param is error, db_id not exist"
