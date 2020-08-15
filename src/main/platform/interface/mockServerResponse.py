@@ -37,9 +37,10 @@ class MockServerResponse:
 
     def delete_mock_response(self, request):
         id = request.json.get("id")
+        mock_id = request.json.get("mock_id")
 
         # 根据参数检查结果判断,如果检查通过则正常处理
-        check_result = CheckParm().delete_mock_response(id)
+        check_result = CheckParm().delete_mock_response(mock_id, id)
         if check_result[0] is True:
             Func().delete_mock_response(id)
             return right_response(None)
@@ -100,7 +101,7 @@ class Func(DBQuery):
         return db_data
 
     def delete_mock_response(self, id):
-        database_func("mock_response", "delete", id)
+        database_func("mock_response", "delete", "first_by_id", id)
 
     def update_mock_response(self, id, mock_id, resp_code, resp_status, resp_headers, resp_body, remark):
         data = {"mock_id": mock_id, "resp_code": resp_code, "resp_status": resp_status,
@@ -149,15 +150,25 @@ class CheckParm(DBQuery):
             else:
                 return True, None
 
-    def delete_mock_response(self, id):
+    def delete_mock_response(self, mock_id, id):
+        mock_id_list = self.db_query()[1]
         resp_id_list = self.db_query()[2]
 
-        if type(id) != int:
+        if type(mock_id) != int or type(id) != int:
             return False, "param is error, param not filled or type error"
         elif id not in resp_id_list:
             return False, "param is error, id not exist"
+        elif mock_id not in mock_id_list:
+            return False, "param is error, mock_id not exist"
         else:
-            return True, None
+            response_code_list = []
+            for mt in database_func("mock_response", "get", "all_respCode_by_mockId", mock_id):
+                response_code_list.append(mt.resp_code)
+
+            if len(response_code_list) == 1:
+                return False, "delete failed, last response cannot be deleted"
+            else:
+                return True, None
 
     def update_mock_response(self, id, mock_id, resp_code, resp_status, resp_headers, resp_body, remark):
         resp_status_list = self.db_query()[0]

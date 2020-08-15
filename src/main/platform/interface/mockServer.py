@@ -132,6 +132,7 @@ class Func(DBQuery):
 
     def delete_mock_server(self, id):
         database_func("mock_servers", "delete", id)
+        database_func("mock_response", "delete", "all_by_mock_id", id)
 
     def update_mock_server(self, id, url, methods, is_available, delay, resp_code, remark):
         data = {"url": url, "method": methods, "is_available": is_available, "delay": delay, "resp_code": resp_code,

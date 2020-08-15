@@ -35,11 +35,19 @@ class MockResponse(Base, TypeCast):
             session.close()
             return new_data
         elif way == "delete":
-            id = parm[0]
-            session = Session()
-            session.query(MockResponse).filter(MockResponse.id == id).update({"deleted_at": time})
-            session.commit()
-            session.close()
+            operation = parm[0]
+            if operation == "first_by_id":
+                id = parm[1]
+                session = Session()
+                session.query(MockResponse).filter(MockResponse.id == id).update({"deleted_at": time})
+                session.commit()
+                session.close()
+            elif operation == "all_by_mock_id":
+                mock_id = parm[1]
+                session = Session()
+                session.query(MockResponse).filter(MockResponse.mock_id == mock_id).update({"deleted_at": time})
+                session.commit()
+                session.close()
         elif way == "update":
             id = parm[0]
             data = parm[1]  # data={"mock_id":,"resp_code":,"resp_status":,"resp_headers":,"resp_body":,"remark":}
