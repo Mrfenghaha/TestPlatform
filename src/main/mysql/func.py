@@ -36,7 +36,7 @@ class DefaultData(MockConfigs):
 
         value_list = ["GET", "POST", "HEAD", "PUT", "PATCH", "DELETE"]
         for value in value_list:
-            data = {"created_at": time, "parm": 'req_method', "value": value}
+            data = {"created_at": time, "parm": 'req_methods', "value": value}
             person = MockConfigs(created_at=data['created_at'], parm=data['parm'], value=data['value'])
             session.add(person)
 

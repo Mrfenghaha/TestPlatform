@@ -12,10 +12,9 @@ class MockServers(Base, TypeCast):
     # 表的结构:
     id = Column(Integer, primary_key=True, autoincrement=True)
     url = Column(String(255), nullable=False, comment='url地址')
-    method = Column(String(25), nullable=False, comment='请求方法')
+    methods = Column(String(25), nullable=False, comment='请求方法')
     is_available = Column(Integer, nullable=False, comment='是否启用')
     delay = Column(Integer, nullable=False, comment='延时响应时间(s)')
-    resp_code = Column(Integer, nullable=False, comment='响应编码')
     remark = Column(TEXT, nullable=False, comment='接口描述')
     created_at = Column(TIMESTAMP)
     updated_at = Column(TIMESTAMP)
@@ -24,11 +23,10 @@ class MockServers(Base, TypeCast):
     def mock_servers_func(self, way, *parm):
         time = datetime.datetime.strptime(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'), "%Y-%m-%d %H:%M:%S")
         if way == "insert":
-            data = parm[0]  # data = {"url": , "method": , "is_available": , "delay": , "resp_code": , "remark": }
+            data = parm[0]  # data = {"url": , "methods": , "is_available": , "delay": , "remark": }
             session = Session()
-            add_data = MockServers(created_at=time, url=data['url'], method=data['method'],
-                                   is_available=data['is_available'], delay=data['delay'], resp_code=data['resp_code'],
-                                   remark=data['remark'])
+            add_data = MockServers(created_at=time, url=data['url'], methods=data['methods'],
+                                   is_available=data['is_available'], delay=data['delay'],  remark=data['remark'])
             session.add(add_data)
             session.commit()
             new_data = add_data.to_dict()  # 获取添加入数据库的所有数据,并转为dict
@@ -42,7 +40,7 @@ class MockServers(Base, TypeCast):
             session.close()
         elif way == "update":
             id = parm[0]
-            data = parm[1]  # data = {"url": , "method": , "is_available": , "delay": , "resp_code": , "req_remark": }
+            data = parm[1]  # data = {"url": , "methods": , "is_available": , "delay": , "req_remark": }
             update_data = dict({"updated_at": time}, **data)
             session = Session()
             session.query(MockServers).filter(MockServers.id == id).update(update_data)
