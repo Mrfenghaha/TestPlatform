@@ -33,7 +33,7 @@ class File:
             os.mkdir(self.path)
 
 
-contect = "# 数据库环境\nmysql:\nhost: localhost\nport: 3306\nuser: xxxx\npassword: xxxx\ndatabase: xxxx\n" \
+contect = "# 数据库环境\nmysql:\n  host: localhost\n  port: 3306\n  user: xxxx\n  password: xxxx\n  database: xxxx\n" \
           "# 加密密码\nencryption_key: xxxx"
 File(env_path).create_yaml_file(contect)  # 如果没有env.yaml则自动创建并写入默认值
 env_content = File(env_path).read_yaml_file()  # 读取env.yaml
