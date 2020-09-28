@@ -96,9 +96,10 @@ class Func(DBQuery):
         content = database_func("mock_servers", "get", "specific_num_info", start, size)
         for con in content:  # 移除不需要的key、value
             resp_info = database_func("mock_response", "get", "first_default_by_mockId", con['id'])
-            print(resp_info['status'], json.loads(resp_info['headers']), json.loads(resp_info['body']))
-            con['response'] = str({"status": resp_info['status'], "headers": json.loads(resp_info['headers']),
-                                   "body": json.loads(resp_info['body'])})
+            # con['response'] = str({"status": resp_info['status'], "headers": json.loads(resp_info['headers']),
+            #                        "body": json.loads(resp_info['body'])})
+            con['response'] = str({"status": resp_info['status'], "headers": resp_info['headers'],
+                                   "body": resp_info['body']})
             del con['created_at'], con['updated_at'], con['deleted_at']
         total = database_func("mock_servers", "get", "all_info_count")  # 获取总条数
         data = {"content": content, "total": total}
