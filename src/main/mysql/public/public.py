@@ -3,7 +3,7 @@ import datetime
 from sqlalchemy import *
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
-from config.readConfig import *
+from config.read_config import *
 
 '''
 所有数据表结果

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -
 import pytest
-from src.main.platform.interface.dbOperationConfigs import *
+from src.main.platform.interface.db_operation_configs import *
 
 
 class TestCheckParmAddDBConfigs:

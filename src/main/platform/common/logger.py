@@ -2,7 +2,7 @@
 import os
 import time
 import logging
-from config.readConfig import *
+from config.read_config import *
 
 # log_path是存放日志的路径
 log_path = os.path.join(cur_path, 'logs')

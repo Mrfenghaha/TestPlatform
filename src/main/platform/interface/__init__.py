@@ -2,11 +2,11 @@
 from flask import *
 from src.main.platform.common.logger import log
 from src.main.platform.interface.pairs import Pairs
-from src.main.platform.interface.mockServer import MockServer
-from src.main.platform.interface.mockServerConfigs import MockServerConfigs
-from src.main.platform.interface.mockServerResponse import MockServerResponse
-from src.main.platform.interface.dbOperation import DBOperation
-from src.main.platform.interface.dbOperationConfigs import DBOperationConfigs
+from src.main.platform.interface.mock_server import MockServer
+from src.main.platform.interface.mock_server_configs import MockServerConfigs
+from src.main.platform.interface.mock_server_response import MockServerResponse
+from src.main.platform.interface.db_operation import DBOperation
+from src.main.platform.interface.db_operation_configs import DBOperationConfigs
 
 
 class Interface:
